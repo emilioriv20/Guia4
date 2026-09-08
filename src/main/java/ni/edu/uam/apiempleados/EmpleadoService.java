@@ -20,11 +20,13 @@ public class EmpleadoService {
         return empleados.stream().filter(e -> e.getId().equals(id)).findFirst();
     }
 
-    // Comprueba si ya existe alguien con el mismo nombre y apellido (sin distinguir mayúsculas/minúsculas)
     public boolean existeEmpleado(String nombres, String apellidos) {
+        if (nombres == null || apellidos == null) return false;
+
         return empleados.stream().anyMatch(e ->
-                e.getNombres().equalsIgnoreCase(nombres.trim()) &&
-                        e.getApellidos().equalsIgnoreCase(apellidos.trim())
+                e.getNombres() != null && e.getApellidos() != null &&
+                        e.getNombres().trim().equalsIgnoreCase(nombres.trim()) &&
+                        e.getApellidos().trim().equalsIgnoreCase(apellidos.trim())
         );
     }
 
@@ -39,8 +41,8 @@ public class EmpleadoService {
 
     public Optional<EmpleadoDTO> actualizar(Long id, EmpleadoDTO datos) {
         return buscarPorId(id).map(empleado -> {
-            boolean mismoNombre = empleado.getNombres().equalsIgnoreCase(datos.getNombres().trim()) &&
-                    empleado.getApellidos().equalsIgnoreCase(datos.getApellidos().trim());
+            boolean mismoNombre = empleado.getNombres().trim().equalsIgnoreCase(datos.getNombres().trim()) &&
+                    empleado.getApellidos().trim().equalsIgnoreCase(datos.getApellidos().trim());
 
             if (!mismoNombre && existeEmpleado(datos.getNombres(), datos.getApellidos())) {
                 throw new IllegalArgumentException("Ya existe otro empleado registrado con esos nombres y apellidos");
